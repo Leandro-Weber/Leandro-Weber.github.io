@@ -104,9 +104,9 @@ var target;
 var up;
 
 //AUDIO
-let shotAudio = new Audio("http://127.0.0.1:5500/audio/shot.wav");
+let shotAudio = new Audio("./audio/shot.wav");
 shotAudio.volume = 0.02;
-let killAudio = new Audio("http://127.0.0.1:5500/audio/kill.wav");
+let killAudio = new Audio("./audio/kill.wav");
 killAudio.volume = 0.02;
 //shotAudio.play();
 
