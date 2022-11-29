@@ -38,7 +38,7 @@ var palette = {
   corAmbiente: [155, 155, 155], // RGB array
 };
 var tex;
-var listTex = ["nitro", "isopor", "madeira", "areia", "tri", "d4"];
+//var listTex = ["nitro", "isopor", "madeira", "areia", "tri", "d4"];
 var selectedCamera = 0;
 var deltaTime = 0;
 var then = 0;
@@ -76,6 +76,15 @@ var theChosenOne;
 var firstPerson = false;
 var continueGame = true;
 var jumps = 0;
+var enemiesTextureList = [
+  "alien0",
+  "alien1",
+  "alien2",
+  "leandro",
+  "toto",
+  "totoBlack",
+];
+var playerTextureList = ["ship", "ship2"];
 
 var arrLuz = [
   new Luz([4, 0, 0], [0, 0, 0], [0, 0, 0], 300),
@@ -182,6 +191,9 @@ function main() {
     raioVermelho: {
       src: "http://127.0.0.1:5500/texture/raioVermelho.jpg",
     },
+    toto: {
+      src: "http://127.0.0.1:5500/texture/toto.png",
+    },
     totoBlack: {
       src: "http://127.0.0.1:5500/texture/totoBlack.png",
     },
@@ -257,7 +269,7 @@ function main() {
             type: "cube",
             translation: [0, 10, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.totoBlack,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -293,7 +305,7 @@ function main() {
             type: "cube",
             translation: [9, 10, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -305,7 +317,7 @@ function main() {
             type: "cube",
             translation: [12, 10, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -317,7 +329,7 @@ function main() {
             type: "cube",
             translation: [15, 10, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -329,7 +341,7 @@ function main() {
             type: "cube",
             translation: [0, 12.5, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -341,7 +353,7 @@ function main() {
             type: "cube",
             translation: [3, 12.5, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -353,7 +365,7 @@ function main() {
             type: "cube",
             translation: [6, 12.5, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -365,7 +377,7 @@ function main() {
             type: "cube",
             translation: [9, 12.5, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -377,7 +389,7 @@ function main() {
             type: "cube",
             translation: [12, 12.5, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -389,7 +401,7 @@ function main() {
             type: "cube",
             translation: [15, 12.5, 0],
             rotation: [degToRad(0), degToRad(0), degToRad(0)],
-            texture: tex.alien0,
+            texture: tex.alien2,
             format: arrayCube,
             boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
@@ -502,7 +514,7 @@ function main() {
   //console.log(sceneDescription);
   scene = makeNode(sceneDescription);
   //console.log(objectsToDraw);
-  console.log(nodeInfosByName);
+  //console.log(nodeInfosByName);
 
   objects.forEach(function (object) {
     object.drawInfo.uniforms.u_lightWorldPosition0 = [
@@ -579,10 +591,13 @@ function main() {
   config.vz = temp[2];
 
   updateBoundingBoxAll();
+  alert(
+    `Use "a", "d", "ArrowLeft" or "ArrowRight" to move and "w" or "SpaceBar" to shoot.`
+  );
 
   requestAnimationFrame(drawScene);
   // console.log(objectsToDraw);
-  // console.log(nodeInfosByName);
+  console.log(sceneDescription.children);
   // console.log(nodeInfosByName["barrier0"].node.drawInfo.boundingBox);
 
   // Draw the scene.
@@ -620,16 +635,18 @@ function drawScene(now) {
 
   if (!enemyShotExists && spawnNewEnemyShot) {
     theChosenOne = Math.floor(Math.random() * enemiesList.length);
-    console.log(`the chosen: ${theChosenOne}`);
+    //console.log(`the chosen: ${theChosenOne}`);
     spawnEnemyShot(enemiesList[theChosenOne]);
 
-    console.log(`lista : ${enemiesList}`);
+    //console.log(`lista : ${enemiesList}`);
   }
   now *= 0.001;
   deltaTime = now - then;
   elapsedTime += deltaTime;
   then = now;
-
+  if (deltaTime > 1) {
+    deltaTime = 0.2;
+  }
   //console.log(shotPosition);
   twgl.resizeCanvasToDisplaySize(gl.canvas);
 
@@ -688,7 +705,7 @@ function drawScene(now) {
     nodeInfosByName["enemies"].trs.translation[1] -= 1;
     jumps++;
     //console.log(jumps);
-    continueGame = false;
+    //continueGame = false;
     elapsedTime = 0;
   }
 
@@ -914,7 +931,7 @@ function drawEndScene(now) {
   viewMatrix = m4.inverse(cameraMatrix);
 
   viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
-  
+
   nodeInfosByName["valeu"].trs.rotation = [0, degToRad(now * 10), 0];
 
   scene.updateWorldMatrix();

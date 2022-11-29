@@ -48,6 +48,8 @@ var config = {
   obj: 0,
   shotSpeed: 20,
   primeiraPessoa: false,
+  enemyTexture: "alien2",
+  playerTexture: "ship2",
 };
 
 var folder_vertice;
@@ -257,5 +259,25 @@ const loadGUI = () => {
   gui.add(config, "shotSpeed", 1, 200, 1);
   gui.add(config, "primeiraPessoa").onChange(function () {
     firstPerson = config.primeiraPessoa;
+  });
+
+  gui.add(config, "enemyTexture", enemiesTextureList).onChange(function () {
+    for (let index = 0; index < 12; index++) {
+      sceneDescription.children[0].children[index].texture =
+        tex[config.enemyTexture];
+    }
+
+    objectsToDraw = [];
+    objects = [];
+    nodeInfosByName = {};
+    scene = makeNode(sceneDescription);
+  });
+  gui.add(config, "playerTexture", playerTextureList).onChange(function () {
+    sceneDescription.children[3].texture = tex[config.playerTexture];
+
+    objectsToDraw = [];
+    objects = [];
+    nodeInfosByName = {};
+    scene = makeNode(sceneDescription);
   });
 };

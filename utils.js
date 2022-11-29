@@ -114,7 +114,7 @@ const computeMatrixBarrierEnemy = (nodeInfos, shot) => {
 };
 
 const updateObjects = (index) => {
-  console.log(sceneDescription.children);
+  //console.log(sceneDescription.children);
 
   sceneDescription.children[0].children[index].draw = false;
   for (var i = 0; i < enemiesList.length; i++) {
@@ -214,7 +214,7 @@ const computeMatrixEnemy = (nodes, bbShot) => {
       objects = [];
       nodeInfosByName = {};
       scene = makeNode(sceneDescription);
-      console.log("colidiu enemy");
+      //console.log("colidiu enemy");
       break;
     }
   }
@@ -239,22 +239,22 @@ const checkColision = (bbo, bbt) => {
   if (bbo[0] < bbt[6] && bbo[2] > bbt[6]) {
     //testa colisão entre obj e parte de cima do tiro
     if (bbo[1] < bbt[7] && bbo[5] > bbt[7]) {
-      console.log("colidiu");
+      //console.log("colidiu");
       return true;
     }
     //testa colisão entre obj e parte de baixo do tiro
     if (bbo[1] < bbt[3] && bbo[5] > bbt[3]) {
-      console.log("colidiu");
+      //console.log("colidiu");
       return true;
     }
   } else if (bbo[0] < bbt[4] && bbo[2] > bbt[4]) {
     //testa se o canto esquerdo da bb do tiro ta entre os x da bb do objeto
     if (bbo[1] < bbt[5] && bbo[5] > bbt[5]) {
-      console.log("colidiu");
+      //console.log("colidiu");
       return true;
     }
     if (bbo[1] < bbt[1] && bbo[5] > bbt[1]) {
-      console.log("colidiu");
+      //console.log("colidiu");
       return true;
     }
   }
@@ -344,15 +344,31 @@ const updateBoundingBoxAll = function () {
 };
 
 canvas.addEventListener("keydown", function (e) {
+  console.log(e.key);
   switch (e.key) {
     case "ArrowRight":
-      nodeInfosByName["player"].trs.translation[0] += 0.5;
+      if (nodeInfosByName["player"].trs.translation[0] < 20)
+        nodeInfosByName["player"].trs.translation[0] += 0.5;
       break;
     case "ArrowLeft":
-      nodeInfosByName["player"].trs.translation[0] -= 0.5;
+      if (nodeInfosByName["player"].trs.translation[0] > -5)
+        nodeInfosByName["player"].trs.translation[0] -= 0.5;
+      break;
+    case "d":
+      if (nodeInfosByName["player"].trs.translation[0] < 20)
+        nodeInfosByName["player"].trs.translation[0] += 0.5;
+      console.log(nodeInfosByName["player"].trs.translation[0]);
+      break;
+    case "a":
+      if (nodeInfosByName["player"].trs.translation[0] > -5)
+        nodeInfosByName["player"].trs.translation[0] -= 0.5;
       break;
 
     case "ArrowUp":
+      spawnNewShot = true;
+      break;
+
+    case " ":
       spawnNewShot = true;
       break;
 
