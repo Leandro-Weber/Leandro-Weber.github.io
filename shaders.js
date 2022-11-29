@@ -7,7 +7,7 @@ in vec2 a_texcoord;
 uniform vec3 u_lightWorldPosition0;
 uniform vec3 u_viewWorldPosition;
 uniform vec3 u_lightWorldPosition1;
-uniform vec3 u_lightWorldPosition2;
+//uniform vec3 u_lightWorldPosition2;
 
 
 uniform mat4 u_world;
@@ -19,8 +19,8 @@ out vec3 v_surfaceToLight0;
 out vec3 v_surfaceToView0;
 out vec3 v_surfaceToLight1;
 out vec3 v_surfaceToView1;
-out vec3 v_surfaceToLight2;
-out vec3 v_surfaceToView2;
+//out vec3 v_surfaceToLight2;
+//out vec3 v_surfaceToView2;
 out vec2 v_texcoord;
 
 void main() {
@@ -35,8 +35,8 @@ void main() {
   v_surfaceToLight1 = u_lightWorldPosition1 - surfaceWorldPosition;
   v_surfaceToView1 = u_viewWorldPosition - surfaceWorldPosition;
 
-  v_surfaceToLight2 = u_lightWorldPosition2 - surfaceWorldPosition;
-  v_surfaceToView2 = u_viewWorldPosition - surfaceWorldPosition;
+  //v_surfaceToLight2 = u_lightWorldPosition2 - surfaceWorldPosition;
+  //v_surfaceToView2 = u_viewWorldPosition - surfaceWorldPosition;
   v_texcoord = a_texcoord;
 }
 `;
@@ -50,8 +50,8 @@ in vec3 v_surfaceToLight0;
 in vec3 v_surfaceToView0;
 in vec3 v_surfaceToLight1;
 in vec3 v_surfaceToView1;
-in vec3 v_surfaceToLight2;
-in vec3 v_surfaceToView2;
+//in vec3 v_surfaceToLight2;
+//in vec3 v_surfaceToView2;
 in vec2 v_texcoord;
 
 uniform float u_shininess;
@@ -62,8 +62,10 @@ uniform vec3 u_specularColor0;
 uniform vec3 u_lightColor1;
 uniform vec3 u_specularColor1;
 
-uniform vec3 u_lightColor2;
-uniform vec3 u_specularColor2;
+//uniform vec3 u_lightColor2;
+//uniform vec3 u_specularColor2;
+
+uniform vec3 u_ambient;
 
 uniform sampler2D u_texture;
 
@@ -77,8 +79,8 @@ void main() {
   vec3 surfaceToLightDirection1 = normalize(v_surfaceToLight1);
   vec3 surfaceToViewDirection1 = normalize(v_surfaceToView1);
 
-  vec3 surfaceToLightDirection2 = normalize(v_surfaceToLight2);
-  vec3 surfaceToViewDirection2 = normalize(v_surfaceToView2);
+  //vec3 surfaceToLightDirection2 = normalize(v_surfaceToLight2);
+  //vec3 surfaceToViewDirection2 = normalize(v_surfaceToView2);
 
   vec3 halfVector0 = normalize(surfaceToLightDirection0 + surfaceToViewDirection0);
   float light0 = max(dot(v_normal, surfaceToLightDirection0),0.0);
@@ -86,24 +88,24 @@ void main() {
   vec3 halfVector1 = normalize(surfaceToLightDirection1 + surfaceToViewDirection1);
   float light1 = max(dot(v_normal, surfaceToLightDirection1),0.0);
 
-  vec3 halfVector2 = normalize(surfaceToLightDirection2 + surfaceToViewDirection2);
-  float light2 = max(dot(v_normal, surfaceToLightDirection2),0.0);
+  //vec3 halfVector2 = normalize(surfaceToLightDirection2 + surfaceToViewDirection2);
+  //float light2 = max(dot(v_normal, surfaceToLightDirection2),0.0);
 
   float specular0 = 0.0;
   float specular1 = 0.0;
-  float specular2 = 0.0;
+  //float specular2 = 0.0;
 
   outColor = texture(u_texture, v_texcoord);
   vec3 color0;
   vec3 color1;
-  vec3 color2;
+  //vec3 color2;
   vec3 spec0;
   vec3 spec1;
-  vec3 spec2;
+  //vec3 spec2;
 
   specular0 = pow(dot(normal, halfVector0), u_shininess);
   specular1 = pow(dot(normal, halfVector1), u_shininess);
-  specular2 = pow(dot(normal, halfVector2), u_shininess);
+  //specular2 = pow(dot(normal, halfVector2), u_shininess);
 
   if(light0>0.0){
   color0 = light0 * u_lightColor0;
@@ -115,16 +117,16 @@ void main() {
   spec1 = specular1 * u_specularColor1;
   }
 
-  if(light2>0.0){
-  color2 = light2 * u_lightColor2;
-  spec2 = specular2 * u_specularColor2;
-  }
+  // if(light2>0.0){
+  // color2 = light2 * u_lightColor2;
+  // spec2 = specular2 * u_specularColor2;
+  // }
   // outColor.rgb *= (color0+color1+color2);
   // outColor.rgb += spec0 + spec1 + spec2 ;
 
-  vec3 ambient = u_specularColor2;
-  outColor.rgb *= (color0+ambient);
-  outColor.rgb += spec0;
+  vec3 ambient = u_ambient;
+  outColor.rgb *= (color0+color1+ambient);
+  outColor.rgb += spec0+spec1;
 }
 `;
 

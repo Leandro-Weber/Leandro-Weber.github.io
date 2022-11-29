@@ -46,7 +46,8 @@ var config = {
   coordv: 0,
   coordu: 0,
   obj: 0,
-  shotSpeed: 10,
+  shotSpeed: 20,
+  primeiraPessoa: false,
 };
 
 var folder_vertice;
@@ -249,5 +250,12 @@ const loadGUI = () => {
     arrLuz[config.luzIndex].spec = palette.corSpec;
   });
 
+  folder_luz.addColor(palette, "corAmbiente").onChange(function () {
+    ambiente = palette.corAmbiente;
+  });
+
   gui.add(config, "shotSpeed", 1, 200, 1);
+  gui.add(config, "primeiraPessoa").onChange(function () {
+    firstPerson = config.primeiraPessoa;
+  });
 };

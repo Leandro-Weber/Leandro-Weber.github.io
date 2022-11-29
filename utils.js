@@ -51,7 +51,6 @@ const createArray = (type) => {
       : JSON.parse(JSON.stringify(pyramidFormat));
 
   let cubeNormal = calculateNormal(copyFormat.position, copyFormat.indices);
-
   const newArray = {
     position: { numComponents: 3, data: copyFormat.position },
     indices: { numComponents: 3, data: copyFormat.indices },
@@ -102,99 +101,159 @@ const computeMatrixShot = (matrix, param) => {
 const computeMatrixBarrier = (nodeInfos, shot) => {
   if (checkColision(nodeInfos, shot)) {
     shotPosition = 0;
-    resetShot(nodeInfosByName["player"], nodeInfosByName["shot"]);
+    //resetShot(nodeInfosByName["player"], nodeInfosByName["shot"]);
+    removeShot();
+  }
+};
+const computeMatrixBarrierEnemy = (nodeInfos, shot) => {
+  if (checkColision(nodeInfos, shot)) {
+    enemyShotPosition = 0;
+    //resetShot(nodeInfosByName["player"], nodeInfosByName["shot"]);
+    removeEnemyShot();
   }
 };
 
 const updateObjects = (index) => {
-  //index = 3;
-  console.log(objeto.children);
+  console.log(sceneDescription.children);
 
-  // enemy
-  // objeto.children[0].children[index].draw = false;
-  // delete objeto.children[0].children[index];
-  // console.log(objeto.children);
-
-  // joga o inimigo pra fora da tela, não sei tirar ele de outra forma
-  objeto.children[0].children[index].translation = [99, 99, 99];
+  sceneDescription.children[0].children[index].draw = false;
+  for (var i = 0; i < enemiesList.length; i++) {
+    if (enemiesList[i] === `${index}`) {
+      enemiesList.splice(i, 1);
+    }
+  }
+  enemiesKilled++;
 
   // player
-  objeto.children[3].translation = nodeInfosByName["player"].trs.translation;
+  sceneDescription.children[3].translation =
+    nodeInfosByName["player"].trs.translation;
 
   // shot
-  objeto.children[1].translation = nodeInfosByName["player"].trs.translation;
+  scene = makeNode(sceneDescription);
+};
+
+const spawnEnemyShot = (index) => {
+  sceneDescription.children[4].draw = true;
+  sceneDescription.children[4].translation = [
+    nodeInfosByName[`enemy${index}`].trs.translation[0] +
+      nodeInfosByName["enemies"].trs.translation[0],
+    nodeInfosByName[`enemy${index}`].trs.translation[1] +
+      nodeInfosByName["enemies"].trs.translation[1],
+    0,
+  ];
+  arrLuz[1].color = [0, 200, 200];
+  arrLuz[1].spec = [0, 200, 200];
+
+  enemyShotPosition = 0;
+
+  objectsToDraw = [];
+  objects = [];
+  scene = makeNode(sceneDescription);
+
+  enemyShotExists = true;
+};
+
+const spawnShot = () => {
+  sceneDescription.children[1].draw = true;
+  sceneDescription.children[1].translation = [
+    ...nodeInfosByName["player"].trs.translation,
+  ];
+  shotPosition = 0;
+  arrLuz[0].color = [255, 0, 0];
+  arrLuz[0].spec = [255, 0, 0];
+
+  objectsToDraw = [];
+  objects = [];
+  scene = makeNode(sceneDescription);
+  shotAudio.load();
+  shotAudio.play();
+  shotExists = true;
+};
+
+const removeShot = () => {
+  sceneDescription.children[1].draw = false;
+  arrLuz[0].color = [0, 0, 0];
+  arrLuz[0].spec = [0, 0, 0];
+
+  objectsToDraw = [];
+  objects = [];
+  scene = makeNode(sceneDescription);
+
+  shotExists = false;
+  spawnNewShot = false;
+};
+
+const removeEnemyShot = () => {
+  sceneDescription.children[4].draw = false;
+  arrLuz[1].color = [0, 0, 0];
+  arrLuz[1].spec = [0, 0, 0];
+
+  objectsToDraw = [];
+  objects = [];
+  scene = makeNode(sceneDescription);
+
+  enemyShotExists = false;
+  spawnNewEnemyShot = false;
 };
 
 const computeMatrixEnemy = (nodes, bbShot) => {
   for (let index = 0; index < enemiesList.length; index++) {
-    //console.log(nodes[`enemy${enemiesList[index]}`]);
     if (
       checkColision(
         nodes[`enemy${enemiesList[index]}`].node.drawInfo.boundingBox,
         bbShot
       )
     ) {
-      // remove objeto
       shotPosition = 0;
-      resetShot(nodeInfosByName["player"], nodeInfosByName["shot"]);
-      // delete nodes[`enemy${enemiesList[index]}`];
-      // enemiesList = [
-      //   ...enemiesList.splice(0, index),
-      //   ...enemiesList.splice(index + 1, enemiesList.length),
-      // ];
-      updateObjects(index);
+      removeShot();
+      updateObjects(enemiesList[index]);
+
       killAudio.play();
 
       objectsToDraw = [];
       objects = [];
       nodeInfosByName = {};
-      scene = makeNode(objeto);
+      scene = makeNode(sceneDescription);
       console.log("colidiu enemy");
       break;
     }
   }
 };
+
+const computeMatrixEnemykill = (nodeInfos, shot) => {
+  if (checkColision(nodeInfos, shot)) {
+    enemyShotPosition = 0;
+    //resetShot(nodeInfosByName["player"], nodeInfosByName["shot"]);
+    removeEnemyShot();
+    alert("Você perdeu!");
+    continueGame = false;
+  }
+};
+
 const convertToZeroOne = (old_value, old_min, old_max) => {
   return (old_value - old_min) / (old_max - old_min);
 };
-// const checkColision = (obj, shot) => {
-//   var size = 1.3; // size representa o raio do objeto
-
-//   // testa se y é positivo
-//   if (shot[1] >= 0) {
-//     if (shot[0] > obj[0] - size && shot[0] < obj[0] + size) {
-//       if (shot[1] > obj[1] - size) {
-//         //colidiu
-//         console.log("colidiu+");
-//         return true;
-//       }
-//     }
-//   } else {
-//     if (shot[0] > obj[0] - size && shot[0] < obj[0] + size) {
-//       if (shot[1] > obj[1] + size) {
-//         //colidiu
-//         console.log("colidiu-");
-
-//         return true;
-//       }
-//     }
-//   }
-//   return false;
-// };
 
 const checkColision = (bbo, bbt) => {
-  var size = 1.3; // size representa o raio do objeto
-  console.log(`bbo  ${bbo}`);
-  console.log(`bbt  ${bbt}`);
-  //testa se o canto esquerdo da bb do tiro ta entre os x da bb do objeto
+  //testa se o canto direito da bb do tiro ta entre os x da bb do objeto
   if (bbo[0] < bbt[6] && bbo[2] > bbt[6]) {
+    //testa colisão entre obj e parte de cima do tiro
     if (bbo[1] < bbt[7] && bbo[5] > bbt[7]) {
       console.log("colidiu");
       return true;
     }
+    //testa colisão entre obj e parte de baixo do tiro
+    if (bbo[1] < bbt[3] && bbo[5] > bbt[3]) {
+      console.log("colidiu");
+      return true;
+    }
   } else if (bbo[0] < bbt[4] && bbo[2] > bbt[4]) {
-    //testa se o canto direito da bb do tiro ta entre os x da bb do objeto
+    //testa se o canto esquerdo da bb do tiro ta entre os x da bb do objeto
     if (bbo[1] < bbt[5] && bbo[5] > bbt[5]) {
+      console.log("colidiu");
+      return true;
+    }
+    if (bbo[1] < bbt[1] && bbo[5] > bbt[1]) {
       console.log("colidiu");
       return true;
     }
@@ -205,67 +264,83 @@ const checkColision = (bbo, bbt) => {
 
 const resetShot = (origin, shot) => {
   shot.trs.translation = origin.trs.translation;
+  updateBoundingBoxPlayerShot();
   //shotAudio.load();
   //shotAudio.play();
 };
 
 const updateBoundingBoxPlayer = function () {
   //Atualiza a boundingBox do player
-  for (
-    let index = 0;
-    index < objeto.children[3].boundingBox.length;
-    index += 2
-  ) {
-    objeto.children[3].boundingBox[index] =
-      objeto.children[3].boundingBox[index] + objeto.children[3].translation[0];
-    objeto.children[3].boundingBox[index + 1] =
-      objeto.children[3].boundingBox[index] + objeto.children[3].translation[1];
+  for (let index = 0; index < 8; index += 2) {
+    nodeInfosByName["player"].node.drawInfo.boundingBox[index] =
+      bbPadrao[index] + nodeInfosByName["player"].trs.translation[0];
+    nodeInfosByName["player"].node.drawInfo.boundingBox[index + 1] =
+      bbPadrao[index] + nodeInfosByName["player"].trs.translation[1];
   }
 };
 
 const updateBoundingBoxEnemies = function () {
-  objeto.children[0].children.forEach((element) => {
-    for (let index = 0; index < element.boundingBox.length; index += 2) {
-      element.boundingBox[index] =
-        element.boundingBox[index] + element.translation[0];
-      element.boundingBox[index + 1] =
-        element.boundingBox[index] + element.translation[1];
+  for (let i = 0; i < enemiesList.length; i++) {
+    for (let index = 0; index < 8; index += 2) {
+      nodeInfosByName[`enemy${enemiesList[i]}`].node.drawInfo.boundingBox[
+        index
+      ] =
+        nodeInfosByName[`enemy${enemiesList[i]}`].trs.scale[0] *
+          bbPadrao[index] +
+        nodeInfosByName[`enemy${enemiesList[i]}`].trs.translation[0] +
+        nodeInfosByName[`enemies`].trs.translation[0];
+
+      nodeInfosByName[`enemy${enemiesList[i]}`].node.drawInfo.boundingBox[
+        index + 1
+      ] =
+        nodeInfosByName[`enemy${enemiesList[i]}`].trs.scale[1] *
+          bbPadrao[index + 1] +
+        nodeInfosByName[`enemy${enemiesList[i]}`].trs.translation[1] +
+        nodeInfosByName[`enemies`].trs.translation[1];
     }
-  });
+  }
 };
 const updateBoundingBoxPlayerShot = function () {
-  for (
-    let index = 0;
-    index < objeto.children[1].boundingBox.length;
-    index += 2
-  ) {
-    objeto.children[1].boundingBox[index] =
-      (objeto.children[1].boundingBox[index] +
-        objeto.children[1].translation[0]) *
-      objeto.children[1].scale[0];
-    objeto.children[1].boundingBox[index + 1] =
-      (objeto.children[1].boundingBox[index] +
-        objeto.children[1].translation[1]) *
-      objeto.children[1].scale[0];
+  for (let index = 0; index < 8; index += 2) {
+    nodeInfosByName["shot"].node.drawInfo.boundingBox[index] =
+      nodeInfosByName["shot"].trs.scale[0] * bbPadrao[index] +
+      nodeInfosByName["shot"].trs.translation[0];
+
+    nodeInfosByName["shot"].node.drawInfo.boundingBox[index + 1] =
+      nodeInfosByName["shot"].trs.scale[1] * bbPadrao[index + 1] +
+      nodeInfosByName["shot"].trs.translation[1];
+  }
+};
+
+const updateBoundingBoxEnemyShot = function () {
+  for (let index = 0; index < 8; index += 2) {
+    nodeInfosByName["enemyShot"].node.drawInfo.boundingBox[index] =
+      nodeInfosByName["enemyShot"].trs.scale[0] * bbPadrao[index] +
+      nodeInfosByName["enemyShot"].trs.translation[0];
+
+    nodeInfosByName["enemyShot"].node.drawInfo.boundingBox[index + 1] =
+      nodeInfosByName["enemyShot"].trs.scale[1] * bbPadrao[index + 1] +
+      nodeInfosByName["enemyShot"].trs.translation[1];
   }
 };
 
 const updateBoundingBoxAll = function () {
   updateBoundingBoxEnemies();
   updateBoundingBoxPlayer();
-  updateBoundingBoxPlayerShot();
+  //updateBoundingBoxPlayerShot();
 
   //Atualiza a boundingBox das barreiras
-  objeto.children[2].children.forEach((element) => {
-    for (let index = 0; index < element.boundingBox.length; index += 2) {
-      element.boundingBox[index] =
-        (element.boundingBox[index] + element.translation[0]) *
-        element.scale[0];
-      element.boundingBox[index + 1] =
-        (element.boundingBox[index] + element.translation[1]) *
-        element.scale[1];
+  for (let i = 0; i < sceneDescription.children[2].children.length; i++) {
+    for (let index = 0; index < 8; index += 2) {
+      nodeInfosByName[`barrier${i}`].node.drawInfo.boundingBox[index] =
+        nodeInfosByName[`barrier${i}`].trs.scale[0] * bbPadrao[index] +
+        nodeInfosByName[`barrier${i}`].trs.translation[0];
+
+      nodeInfosByName[`barrier${i}`].node.drawInfo.boundingBox[index + 1] =
+        nodeInfosByName[`barrier${i}`].trs.scale[1] * bbPadrao[index + 1] +
+        nodeInfosByName[`barrier${i}`].trs.translation[1];
     }
-  });
+  }
 };
 
 canvas.addEventListener("keydown", function (e) {
@@ -275,6 +350,10 @@ canvas.addEventListener("keydown", function (e) {
       break;
     case "ArrowLeft":
       nodeInfosByName["player"].trs.translation[0] -= 0.5;
+      break;
+
+    case "ArrowUp":
+      spawnNewShot = true;
       break;
 
     default:
