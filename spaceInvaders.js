@@ -168,40 +168,43 @@ function main() {
 
   tex = twgl.createTextures(gl, {
     raio: {
-      src: "http://127.0.0.1:5500/texture/raio.jpg",
-    },
-    alien0: {
-      src: "http://127.0.0.1:5500/texture/alien0.png",
-    },
-    alien1: {
-      src: "http://127.0.0.1:5500/texture/alien1.jpg",
+      src: "./texture/raio.jpg",
     },
     alien2: {
-      src: "http://127.0.0.1:5500/texture/alien3.png",
+      src: "./texture/alien0.png",
     },
-    ship: {
-      src: "http://127.0.0.1:5500/texture/ship.png",
+    alien1: {
+      src: "./texture/alien1.jpg",
+    },
+    alien0: {
+      src: "./texture/alien3.png",
     },
     ship2: {
-      src: "http://127.0.0.1:5500/texture/ship2.png",
+      src: "./texture/ship.png",
+    },
+    ship: {
+      src: "./texture/ship2.png",
     },
     asteroid: {
-      src: "http://127.0.0.1:5500/texture/asteroid.jpg",
+      src: "./texture/asteroid.jpg",
     },
     raioVermelho: {
-      src: "http://127.0.0.1:5500/texture/raioVermelho.jpg",
+      src: "./texture/raioVermelho.jpg",
     },
     toto: {
-      src: "http://127.0.0.1:5500/texture/toto.png",
+      src: "./texture/toto.png",
     },
     totoBlack: {
-      src: "http://127.0.0.1:5500/texture/totoBlack.png",
+      src: "./texture/totoBlack.png",
     },
     leandro: {
-      src: "http://127.0.0.1:5500/texture/leandro.png",
+      src: "./texture/leandro.png",
     },
     valeu: {
-      src: "http://127.0.0.1:5500/texture/valeu.png",
+      src: "./texture/valeu.png",
+    },
+    autor: {
+      src: "./texture/autor.png",
     },
   });
   gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
@@ -496,19 +499,19 @@ function main() {
 
         children: [],
       },
-      {
-        name: "leandro",
-        draw: true,
-        type: "cube",
-        translation: [-100, -100, 2],
-        rotation: [degToRad(0), degToRad(0), degToRad(0)],
-        scale: [0.2, 0.4, 0.2],
-        texture: tex.leandro,
-        format: arrayCube,
-        boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
+      // {
+      //   name: "leandro",
+      //   draw: true,
+      //   type: "cube",
+      //   translation: [-15, -15, 0],
+      //   rotation: [degToRad(0), degToRad(0), degToRad(0)],
+      //   scale: [10, 1, 0.2],
+      //   texture: tex.autor,
+      //   format: arrayCube,
+      //   boundingBox: [-1, -1, 1, -1, 1, 1, -1, 1],
 
-        children: [],
-      },
+      //   children: [],
+      // },
     ],
   };
   //console.log(sceneDescription);
