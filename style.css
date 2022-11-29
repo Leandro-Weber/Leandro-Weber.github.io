@@ -7,7 +7,7 @@ canvas {
   height: 100vh;
   display: block;
   background-color: black;
-  background-image: url(/spaceInvaders/texture/space2.jpg);
+  background-image: url(./texture/space2.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
